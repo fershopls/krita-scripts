@@ -87,21 +87,23 @@ def main():
     # Hide all layers
     initial_current_time = document.currentTime()
     initial_layers_visible = [layer.visible() for layer in root_layers]
-    for layer in root_layers:
-        layer.setVisible(False)
+    initial_layers_locked = [layer.locked() for layer in root_layers]
     
     # Export each layer
     for layer in root_layers:
-        if layer.name().endswith("-hide"):
+        for layer in root_layers:
+            layer.setLocked(False)
             layer.setVisible(False)
 
+        if layer.name().endswith("-hide"):
+            layer.setVisible(False)
+            print(f"Hide layer: {layer.name()}")
             continue
 
         if layer.type() == "grouplayer":
             print(f"Layer {layer.name()} is a group layer.")
             layer.setVisible(True)
             export_frames(document, layer.name())
-            layer.setVisible(False)
             continue
             
         if not layer.animated():
@@ -110,13 +112,13 @@ def main():
 
         layer.setVisible(True)
         export_frames(document, layer.name())
-        layer.setVisible(False)
     
     print("Exported all frames.")
 
     # Restore the initial visibility of the layers
     for i, layer in enumerate(root_layers):
         layer.setVisible(initial_layers_visible[i])
+        layer.setLocked(initial_layers_locked[i])
     
     # Restore the initial current time
     document.setCurrentTime(initial_current_time)
@@ -138,7 +140,7 @@ def export_frames(document, layer_name):
             if byte != b'\x00':
                 is_image_empty = False
                 image_bytes += 1
-                print(f"Byte: {byte}")
+                # print(f"Byte: {byte}")
             
             if image_bytes > 100:
                 break
