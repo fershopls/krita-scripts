@@ -4,8 +4,28 @@ from krita import InfoObject
 from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import QFileDialog
 
+
+
 EXPORT_SUBJECT = r""
 EXPORT_DIRECTORY = r""
+
+def get_old_file_path():
+    import os
+    temp_dir = os.path.expanduser("~")
+    old_file_path_file = os.path.join(temp_dir, "krita-export-animation-frames.txt")
+    
+    if not os.path.exists(old_file_path_file):
+        return None
+    
+    with open(old_file_path_file, "r") as f:
+        return f.read()
+
+def set_old_file_path(file_path):
+    import os
+    temp_dir = os.path.expanduser("~")
+    old_file_path_file = os.path.join(temp_dir, "krita-export-animation-frames.txt")
+    with open(old_file_path_file, "w") as f:
+        f.write(file_path)
 
 def create_file():
     # Get the Krita instance
@@ -16,7 +36,7 @@ def create_file():
     file_path, _ = QFileDialog.getSaveFileName(
         None,
         "Create New File",
-        "",
+        get_old_file_path(),
         "PNG Files (*.png);;All Files (*)"
     )
     
@@ -44,32 +64,13 @@ if not EXPORT_SUBJECT or not EXPORT_DIRECTORY:
         print("No output file selected.")
         exit()
 
+    set_old_file_path(output_filepath)
     output_directory = os.path.dirname(output_filepath)
     output_filename_with_extension = os.path.basename(output_filepath)
     output_filename_without_extension = os.path.splitext(output_filename_with_extension)[0]
 
     EXPORT_SUBJECT = output_filename_without_extension
     EXPORT_DIRECTORY = output_directory
-
-def select_directory():
-    # Get the Krita instance
-    krita_instance = krita.Krita.instance()
-    
-    # Open a file dialog to select a directory
-    directory = QFileDialog.getExistingDirectory(
-        None,
-        "Select Directory",
-        "",
-        QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
-    )
-    
-    # Check if a directory was selected
-    if directory:
-        print(f"Selected directory: {directory}")
-        return directory
-    else:
-        print("No directory selected")
-        return None
 
 def main():
     # Get the active document
@@ -149,7 +150,7 @@ def export_frames(document, layer_name):
         # Set up export configuration
         info = InfoObject()
         info.setProperty("alpha", True)
-        info.setProperty("compression", 3)
+        info.setProperty("compression", 1)
         info.setProperty("forceSRGB", False)
         info.setProperty("indexed", False)
         info.setProperty("interlaced", False)
