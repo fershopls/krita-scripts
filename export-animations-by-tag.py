@@ -4,7 +4,9 @@ from krita import InfoObject
 from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import QFileDialog
 
-
+"""
+layers ending with -hide will be hidden
+"""
 
 EXPORT_SUBJECT = r""
 EXPORT_DIRECTORY = r""
