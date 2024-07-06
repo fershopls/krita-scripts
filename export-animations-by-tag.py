@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QFileDialog
 
 """
 layers ending with -hide will be hidden
+remember to add a empty frame after animations!
 """
 
 EXPORT_SUBJECT = r""
@@ -93,9 +94,13 @@ def main():
     
     # Export each layer
     for layer in root_layers:
-        for layer in root_layers:
-            layer.setLocked(False)
-            layer.setVisible(False)
+        print('#'*20)
+        print('LAYER:', layer.name())
+        print('#'*20)
+
+        for _layer in root_layers:
+            _layer.setLocked(False)
+            _layer.setVisible(False)
 
         if layer.name().endswith("-hide"):
             layer.setVisible(False)
